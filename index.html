@@ -15,6 +15,8 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="LPG SmartRoute — Bangalore's Intelligent Refuel Finder">
 <meta property="og:description" content="Dijkstra-powered routing with live congestion detection for auto drivers.">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d6efd">  
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"LPG SmartRoute","description":"🛺 Auto LPG SmartRoute — Dijkstra Intelligent Refuel Finder for Bangalore auto rickshaw drivers","url":"https://lpg-smartroute.example.com","applicationCategory":"NavigationApplication","operatingSystem":"Web","inLanguage":"en-IN","offers":{"@type":"Offer","price":"0","priceCurrency":"INR"},"areaServed":{"@type":"City","name":"Bangalore","addressCountry":"IN"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does the Dijkstra 3-factor algorithm work?","acceptedAnswer":{"@type":"Answer","text":"The engine computes a composite cost C = α×travelTime + β×waitTime + γ×normalizedPrice for every station. A MinHeap prunes stations exceeding distance or wait thresholds, then extracts the minimum-cost feasible pump."}},{"@type":"Question","name":"Which LPG stations are monitored?","acceptedAnswer":{"@type":"Answer","text":"10 stations across Bangalore including Hebbal, Nagarbhavi, Sarjapur Road, Vidyaranyapura, Yeshwanthpur, Gandhi Nagar, Mysore Circle, Lal Bagh, Nayandahalli, and Bommasandra."}},{"@type":"Question","name":"Can I register as a driver and share my location?","acceptedAnswer":{"@type":"Answer","text":"Yes. Register on the Registration page, allow GPS access, and your real position will appear on the live map, contributing to congestion detection and community alerts."}}]}</script>
 
@@ -38,6 +40,7 @@ tailwind.config={theme:{extend:{colors:{bg:'#0a0e08',card:'#111a0e',surface:'#18
   --ok:#22c55e;--warn:#f97316;--danger:#ef4444;--info:#60a5fa;--algo:#a78bfa;
   --text:#f0f7ed;--muted:#7a9a6a;--dim:#3a5530;
 }
+
 body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:6px}
@@ -2147,6 +2150,12 @@ style.textContent=`@media(max-width:768px){.hidden-sm{display:none!important}}`;
 document.head.appendChild(style);
 
 document.readyState==='loading'?document.addEventListener('DOMContentLoaded',init):init();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js')
+    .then(() => console.log("Service Worker Registered"));
+}
 </script>
 </body>
 </html>
