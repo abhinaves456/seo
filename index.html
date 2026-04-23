@@ -29,6 +29,10 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 <script>
+window.addEventListener('error', function(event) {
+  console.error('Unhandled Error: ', event.error ? event.error.stack : event.message);
+});
+</script><script>
 tailwind.config={theme:{extend:{colors:{bg:'#0a0e08',card:'#111a0e',surface:'#182314',elevated:'#1f2d18',border:'#263d20',accent:'#f5c518',accentHi:'#fcd34d',ok:'#22c55e',warn:'#f97316',danger:'#ef4444',info:'#60a5fa',algo:'#a78bfa',text:'#f0f7ed',muted:'#7a9a6a',dim:'#3a5530'},fontFamily:{sans:['Syne','sans-serif'],serif:['Instrument Serif','serif'],mono:['JetBrains Mono','monospace']}}}}
 </script>
 
@@ -99,18 +103,18 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);overfl
 @keyframes userPulse{0%,100%{box-shadow:0 0 0 4px rgba(96,165,250,.3),0 4px 14px rgba(0,0,0,.4)}50%{box-shadow:0 0 0 10px rgba(96,165,250,0),0 4px 14px rgba(0,0,0,.4)}}
 
 /* forms */
-.inp{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-size:14px;font-family:'Syne',sans-serif;transition:border-color .2s,box-shadow .2s;outline:none}
+.inp{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-size:14px;font-family:'Syne',sans-serif;transition:border-color .2s,box-shadow .2s;outline:none;min-height: 48px; touch-action: manipulation;}
 .inp:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,92,26,.12)}
 .inp::placeholder{color:var(--muted)}
 
 /* buttons */
-.btn-a{background:var(--accent);color:#0a0e08;font-weight:800;border-radius:10px;padding:10px 22px;font-size:13px;transition:all .25s;display:inline-flex;align-items:center;gap:7px}
+.btn-a{background:var(--accent);color:#0a0e08;font-weight:800;border-radius:10px;padding:10px 22px;font-size:13px;transition:all .25s;display:inline-flex;align-items:center;gap:7px;min-height: 48px; touch-action: manipulation;}
 .btn-a:hover{background:var(--accentHi);box-shadow:0 6px 24px rgba(245,197,24,.35)}
-.btn-ok{background:rgba(34,211,160,.15);color:var(--ok);border:1px solid rgba(34,211,160,.3);font-weight:700;border-radius:10px;padding:10px 22px;font-size:13px;transition:all .25s}
+.btn-ok{background:rgba(34,211,160,.15);color:var(--ok);border:1px solid rgba(34,211,160,.3);font-weight:700;border-radius:10px;padding:10px 22px;font-size:13px;transition:all .25s;min-height: 48px; touch-action: manipulation;}
 .btn-ok:hover{background:rgba(34,211,160,.25)}
-.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:10px 22px;font-size:13px;transition:all .25s}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:10px 22px;font-size:13px;transition:all .25s;min-height: 48px; touch-action: manipulation;}
 .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
-.btn-danger{background:rgba(239,68,68,.1);color:var(--danger);border:1px solid rgba(239,68,68,.25);font-weight:700;border-radius:10px;padding:8px 18px;font-size:12px;transition:all .25s}
+.btn-danger{background:rgba(239,68,68,.1);color:var(--danger);border:1px solid rgba(239,68,68,.25);font-weight:700;border-radius:10px;padding:8px 18px;font-size:12px;transition:all .25s;min-height: 48px; touch-action: manipulation;}
 .btn-danger:hover{background:rgba(239,68,68,.2)}
 
 /* cards */
@@ -161,12 +165,16 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);overfl
 .sim-panel{background:rgba(12,20,10,.95);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:12px;padding:14px}
 
 /* Range thumb colour */
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);margin-top:-5px;cursor:pointer;transition:transform .15s}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:var(--accent);margin-top:-8px;cursor:pointer;transition:transform .15s}
 input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.25)}
 /* Report charts variety */
 .chart-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
 
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+#algo-drawer.open { transform: translateY(0) !important; }
+
+#algo-drawer.open { transform: translateY(0) !important; }
 </style>
 </head>
 <body>
@@ -176,7 +184,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.25)}
 <div id="loader"><div class="spin"></div><p style="color:var(--muted);font-size:12px;letter-spacing:.1em;text-transform:uppercase">Initialising Dijkstra Engine & IoT Feed</p></div>
 
 <!-- Toasts -->
-<div id="toast-container" style="position:fixed;bottom:24px;right:20px;z-index:2000;display:flex;flex-direction:column;gap:8px;pointer-events:none;max-width:340px"></div>
+<div id="toast-container" style="position:fixed;bottom:80px;right:20px;z-index:2000;display:flex;flex-direction:column;gap:8px;pointer-events:none;max-width:340px"></div>
 
 <!-- Bell alerts panel placeholder -->
 <div id="alert-panel-container"></div>
@@ -202,29 +210,38 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.25)}
 </nav>
 
 <!-- Header -->
-<header class="glass" style="position:fixed;top:0;left:0;right:0;z-index:400;height:58px;display:flex;align-items:center;padding:0 20px;gap:16px">
-  <a href="#home" style="display:flex;align-items:center;gap:8px;color:var(--accent);font-weight:800;font-size:17px;text-decoration:none;flex-shrink:0">
-    <i class="fa-solid fa-car-side"></i>
-    <span class="hidden-sm">Auto LPG SmartRoute</span>
-  </a>
-  <div style="display:flex;align-items:center;gap:5px;flex-shrink:0;padding:3px 10px;background:rgba(34,211,160,.08);border:1px solid rgba(34,211,160,.2);border-radius:20px">
-    <span class="live-dot"></span>
-    <span style="font-size:10px;font-weight:700;color:var(--ok);letter-spacing:.05em">LIVE</span>
-    <span style="font-size:10px;color:var(--muted);margin-left:4px" id="live-clock"></span>
-  </div>
-  <nav id="desk-nav" style="display:flex;align-items:center;gap:22px;flex:1;justify-content:center"></nav>
-  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-    <button onclick="openSearch()" style="width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'"><i class="fa-solid fa-magnifying-glass" style="font-size:13px"></i></button>
-    <button onclick="toggleAlertPanel()" id="bell-btn" style="width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center;transition:all .2s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">
-      <i class="fa-solid fa-bell" style="font-size:13px"></i>
-      <span id="bell-badge" style="position:absolute;top:-3px;right:-4px;min-width:16px;height:16px;background:var(--danger);color:white;font-size:9px;font-weight:700;border-radius:8px;display:none;align-items:center;justify-content:center;padding:0 3px">0</span>
-    </button>
-    <div id="nav-user-btn"></div>
-    <button onclick="openMob()" id="mob-toggle" style="width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;display:none;align-items:center;justify-content:center"><i class="fa-solid fa-bars" style="font-size:13px"></i></button>
-  </div>
-</header>
 
-<main id="app" style="min-height:100vh;padding-top:58px"></main>
+<!-- Bottom Navigation -->
+<nav class="glass" style="position:fixed;bottom:0;left:0;right:0;z-index:400;display:flex;align-items:center;padding:10px 20px env(safe-area-inset-bottom);gap:16px;justify-content:space-around;">
+  <a href="#home" style="display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);text-decoration:none;font-size:10px;">
+    <i class="fa-solid fa-house" style="font-size:20px;"></i>
+    Home
+  </a>
+  <a href="#map" style="display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);text-decoration:none;font-size:10px;">
+    <i class="fa-solid fa-map-location-dot" style="font-size:20px;"></i>
+    Map
+  </a>
+  <a href="#dashboard" style="display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);text-decoration:none;font-size:10px;">
+    <i class="fa-solid fa-id-card" style="font-size:20px;"></i>
+    Dash
+  </a>
+  <button onclick="toggleAlertPanel()" id="bell-btn" style="display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);background:none;border:none;font-size:10px;cursor:pointer;position:relative;">
+    <i class="fa-solid fa-bell" style="font-size:20px;"></i>
+    Alerts
+    <span id="bell-badge" style="position:absolute;top:-4px;right:6px;min-width:16px;height:16px;background:var(--danger);color:white;font-size:9px;font-weight:700;border-radius:8px;display:none;align-items:center;justify-content:center;padding:0 3px">0</span>
+  </button>
+  <button onclick="openSearch()" style="display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);background:none;border:none;font-size:10px;cursor:pointer;">
+    <i class="fa-solid fa-magnifying-glass" style="font-size:20px;"></i>
+    Search
+  </button>
+</nav>
+
+
+
+
+
+<!-- Top User Btn --><div id="nav-user-btn" style="position:fixed;top:env(safe-area-inset-top);right:20px;z-index:500;padding-top:15px;"></div>
+<main id="app" style="min-height:100dvh;padding-top:60px;padding-bottom:70px;"></main>
 
 <footer style="background:var(--card);border-top:1px solid var(--border);padding:50px 20px 30px">
   <div style="max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:32px">
@@ -811,17 +828,17 @@ function simTick(){
 }
 
 function updateQueues(){
-  STATIONS.forEach(s=>{
-    let c=0;
-    G.simAutos.forEach(a=>{if(a.status==='waiting'&&a.target.id===s.id&&distM(a.lat,a.lng,s.lat,s.lng)<120)c++});
-    const prev=s.status;
-    s.queue=Math.max(1,c+Math.floor(Math.random()*3));
-    s.status=s.queue<8?'ok':s.queue<16?'warn':'busy';
-    if(s.status!==prev&&(s.status==='warn'||s.status==='busy')){
-      generateAlert(s);
-    }
-  });
-  recordHistory();
+  //   STATIONS.forEach(s=>{
+  //     let c=0;
+  //     G.simAutos.forEach(a=>{if(a.status==='waiting'&&a.target.id===s.id&&distM(a.lat,a.lng,s.lat,s.lng)<120)c++});
+  //     const prev=s.status;
+  //     s.queue=Math.max(1,c+Math.floor(Math.random()*3));
+  //     s.status=s.queue<8?'ok':s.queue<16?'warn':'busy';
+  //     if(s.status!==prev&&(s.status==='warn'||s.status==='busy')){
+  //       generateAlert(s);
+  //     }
+  //   });
+  //   recordHistory();
   updateStatsBar();
 }
 
@@ -882,11 +899,30 @@ function initMap(){
   });
 
   // Auto markers
+
   G.autoMarkers=[];
-  G.simAutos.forEach(a=>{
-    const icon=L.divIcon({className:'',html:`<div class="auto-dot ${a.status}"></div>`,iconSize:[10,10],iconAnchor:[5,5]});
-    const m=L.marker([a.lat,a.lng],{icon}).addTo(G.map);
-    G.autoMarkers.push({id:a.id,marker:m});
+  firebase.database().ref('drivers').on('value', snap => {
+    const drivers = snap.val() || {};
+    const newKeys = Object.keys(drivers);
+    // Remove disconnected markers
+    for(let i=G.autoMarkers.length-1; i>=0; i--) {
+      if(!drivers[G.autoMarkers[i].id]) {
+        G.map.removeLayer(G.autoMarkers[i].marker);
+        G.autoMarkers.splice(i, 1);
+      }
+    }
+    // Update or add markers
+    newKeys.forEach(k => {
+      const d = drivers[k];
+      const existing = G.autoMarkers.find(m => m.id === k);
+      if(existing) {
+        existing.marker.setLatLng([d.lat, d.lng]);
+      } else {
+        const icon=L.divIcon({className:'',html:`<div class="auto-dot moving" style="background:var(--accent);"></div>`,iconSize:[10,10],iconAnchor:[5,5]});
+        const m=L.marker([d.lat,d.lng],{icon}).addTo(G.map);
+        G.autoMarkers.push({id:k,marker:m});
+      }
+    });
   });
 
   // Driver marker
@@ -948,6 +984,13 @@ function startGPS(onPos,onErr){
   G.watchId=navigator.geolocation.watchPosition(pos=>{
     G.driver.lastLat=pos.coords.latitude;
     G.driver.lastLng=pos.coords.longitude;
+    const vKey = G.driver.regNo || 'anonymous';
+    firebase.database().ref('drivers/' + vKey).set({lat: pos.coords.latitude, lng: pos.coords.longitude});
+    if(!G.disconnectRegistered) {
+      firebase.database().ref('drivers/' + vKey).onDisconnect().remove();
+      G.disconnectRegistered = true;
+    }
+
     G.driver.accuracy=pos.coords.accuracy;
     if(G.mapInited)addDriverMarker(G.driver.lastLat,G.driver.lastLng);
     if(onPos)onPos(pos);
@@ -970,8 +1013,8 @@ const NAV=[
 ];
 
 function buildNav(){
-  $('desk-nav').innerHTML=NAV.map(n=>`<a href="#${n.hash}" data-nav="${n.hash}" style="font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;transition:color .2s;padding:4px 0;position:relative" onmouseover="this.style.color='var(--accent)'" onmouseout="if(!this.classList.contains('nav-active'))this.style.color='var(--muted)'">${n.label}</a>`).join('');
-  $('mob-links').innerHTML=NAV.map(n=>`<a href="#${n.hash}" onclick="closeMob()" data-nav="${n.hash}" style="font-size:18px;font-weight:700;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:12px" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'"><i class="fa-solid ${n.icon}" style="width:24px;text-align:center"></i>${n.label}</a>`).join('');
+  if($('desk-nav')) $('desk-nav').innerHTML=NAV.map(n=>`<a href="#${n.hash}" data-nav="${n.hash}" style="font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;transition:color .2s;padding:4px 0;position:relative" onmouseover="this.style.color='var(--accent)'" onmouseout="if(!this.classList.contains('nav-active'))this.style.color='var(--muted)'">${n.label}</a>`).join('');
+  if($('mob-links')) $('mob-links').innerHTML=NAV.map(n=>`<a href="#${n.hash}" onclick="closeMob()" data-nav="${n.hash}" style="font-size:18px;font-weight:700;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:12px" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'"><i class="fa-solid ${n.icon}" style="width:24px;text-align:center"></i>${n.label}</a>`).join('');
 }
 
 function setActiveNav(hash){
@@ -991,7 +1034,7 @@ function updateUserBtn(){
       +'<button onclick="logoutDriver()" title="Logout" style="width:28px;height:28px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center"><i class="fa-solid fa-right-from-bracket"></i></button>'
       +'</div>';
   } else {
-    el.innerHTML='<a href="#register" class="btn-a" style="padding:6px 16px;font-size:12px;text-decoration:none"><i class="fa-solid fa-car-side"></i>Login / Register</a>';
+    el.innerHTML='<a href="#register" class="btn-a" style="padding:6px 16px;font-size:12px;text-decoration:none"><i class="fa-solid fa-car-side"></i><span class="hidden-sm">Login / </span>Register</a>';
   }
 }
 
@@ -1112,7 +1155,7 @@ function renderHome(el){
   <section style="max-width:1100px;margin:0 auto;padding:60px 20px">
     <h2 style="font-family:'Instrument Serif',serif;font-size:clamp(28px,4vw,42px);margin-bottom:8px">Station Status <em style="color:var(--accent)">Right Now</em></h2>
     <p style="color:var(--muted);margin-bottom:32px;font-size:14px">Live queue data from our IoT simulation. Refreshes every 2 seconds.</p>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px">
+    <div style="display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:14px;padding-bottom:10px;-webkit-overflow-scrolling:touch;">
       ${STATIONS.map(s=>{
         const{ranked:r}=dijkstra(); const rank=r.findIndex(x=>x.id===s.id);
         const cl={ok:'var(--ok)',warn:'var(--warn)',busy:'var(--danger)'};
@@ -1187,7 +1230,7 @@ function renderMapPage(el){
   <div style="position:relative;height:calc(100vh - 58px)">
     <div id="map-canvas" style="position:absolute;inset:0;z-index:0"></div>
     <!-- Left panel -->
-    <div style="position:absolute;top:12px;left:12px;z-index:40;width:260px;display:flex;flex-direction:column;gap:10px;pointer-events:none;max-height:calc(100vh - 80px)">
+    <!-- Map Bottom Sheet --><div style="position:absolute;bottom:0;left:0;width:100%;background:var(--card);border-radius:20px 20px 0 0;padding:15px;z-index:400;max-height:60dvh;overflow-y:auto;display:flex;flex-direction:column;gap:10px;pointer-events:auto;box-shadow: 0 -4px 10px rgba(0,0,0,0.5);">
       <div class="sim-panel" style="pointer-events:auto">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
           <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)">Simulation</span>
@@ -1229,7 +1272,10 @@ function renderMapPage(el){
       </div>
     </div>
     <!-- Algorithm Playground Panel -->
-    <div class="sim-panel" style="pointer-events:auto;width:280px">
+    <div id="algo-drawer-handle" onclick="document.getElementById('algo-drawer').classList.toggle('open')" style="position:fixed;bottom:80px;right:20px;width:50px;height:50px;border-radius:25px;background:var(--algo);color:white;display:flex;align-items:center;justify-content:center;z-index:600;box-shadow:0 4px 14px rgba(167,139,250,.4);cursor:pointer;pointer-events:auto;"><i class="fa-solid fa-microchip" style="font-size:20px;"></i></div>
+    <div id="algo-drawer" class="sim-panel" style="position:fixed;bottom:0;left:0;width:100%;z-index:700;padding-bottom:calc(10px + env(safe-area-inset-bottom));border-radius:20px 20px 0 0;transform:translateY(100%);transition:transform 0.3s ease-out;pointer-events:auto;box-shadow: 0 -10px 40px rgba(0,0,0,0.5);">
+      <button onclick="document.getElementById('algo-drawer').classList.remove('open')" style="position:absolute;top:10px;right:15px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
         <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--algo)"><i class="fa-solid fa-microchip" style="margin-right:5px"></i>Algorithm Controls</span>
         <button onclick="runDijkstraMap()" style="background:var(--accent);color:white;border:none;border-radius:7px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;font-family:Syne,sans-serif"><i class="fa-solid fa-play" style="margin-right:4px"></i>Run</button>
@@ -1240,7 +1286,7 @@ function renderMapPage(el){
           <span style="font-size:11px;color:var(--muted)">α — Travel Weight</span>
           <span style="font-size:11px;font-weight:700;color:var(--accent);font-family:'JetBrains Mono',monospace" id="map-alpha-val">1.0</span>
         </div>
-        <input type="range" min="0" max="3" step="0.1" value="1.0" id="map-alpha" oninput="mapAlgoUpdate()" style="-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:var(--border);outline:none;cursor:pointer">
+        <input type="range" min="0" max="3" step="0.1" value="1.0" id="map-alpha" oninput="mapAlgoUpdate()" style="-webkit-appearance:none;width:100%;height:12px;border-radius:6px;background:var(--border);outline:none;cursor:pointer">
       </div>
       <!-- β slider -->
       <div style="margin-bottom:10px">
@@ -1248,7 +1294,7 @@ function renderMapPage(el){
           <span style="font-size:11px;color:var(--muted)">β — Queue Weight</span>
           <span style="font-size:11px;font-weight:700;color:var(--algo);font-family:'JetBrains Mono',monospace" id="map-beta-val">1.5</span>
         </div>
-        <input type="range" min="0" max="4" step="0.1" value="1.5" id="map-beta" oninput="mapAlgoUpdate()" style="-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:var(--border);outline:none;cursor:pointer">
+        <input type="range" min="0" max="4" step="0.1" value="1.5" id="map-beta" oninput="mapAlgoUpdate()" style="-webkit-appearance:none;width:100%;height:12px;border-radius:6px;background:var(--border);outline:none;cursor:pointer">
       </div>
       <!-- γ slider -->
       <div style="margin-bottom:10px">
@@ -1256,7 +1302,7 @@ function renderMapPage(el){
           <span style="font-size:11px;color:var(--muted)">γ — Price Weight</span>
           <span style="font-size:11px;font-weight:700;color:var(--ok);font-family:'JetBrains Mono',monospace" id="map-gamma-val">1.5</span>
         </div>
-        <input type="range" min="0" max="4" step="0.1" value="1.5" id="map-gamma" oninput="mapAlgoUpdate()" style="-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:var(--border);outline:none;cursor:pointer">
+        <input type="range" min="0" max="4" step="0.1" value="1.5" id="map-gamma" oninput="mapAlgoUpdate()" style="-webkit-appearance:none;width:100%;height:12px;border-radius:6px;background:var(--border);outline:none;cursor:pointer">
       </div>
       <!-- maxWait slider -->
       <div style="margin-bottom:10px">
@@ -1264,7 +1310,7 @@ function renderMapPage(el){
           <span style="font-size:11px;color:var(--muted)">Max Wait (min)</span>
           <span style="font-size:11px;font-weight:700;color:var(--warn);font-family:'JetBrains Mono',monospace" id="map-mw-val">45</span>
         </div>
-        <input type="range" min="5" max="90" step="1" value="45" id="map-mw" oninput="mapAlgoUpdate()" style="-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:var(--border);outline:none;cursor:pointer">
+        <input type="range" min="5" max="90" step="1" value="45" id="map-mw" oninput="mapAlgoUpdate()" style="-webkit-appearance:none;width:100%;height:12px;border-radius:6px;background:var(--border);outline:none;cursor:pointer">
       </div>
       <!-- maxDist slider -->
       <div style="margin-bottom:12px">
@@ -1272,7 +1318,7 @@ function renderMapPage(el){
           <span style="font-size:11px;color:var(--muted)">Max Distance (km)</span>
           <span style="font-size:11px;font-weight:700;color:var(--info);font-family:'JetBrains Mono',monospace" id="map-md-val">15</span>
         </div>
-        <input type="range" min="1" max="30" step="0.5" value="15" id="map-md" oninput="mapAlgoUpdate()" style="-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:var(--border);outline:none;cursor:pointer">
+        <input type="range" min="1" max="30" step="0.5" value="15" id="map-md" oninput="mapAlgoUpdate()" style="-webkit-appearance:none;width:100%;height:12px;border-radius:6px;background:var(--border);outline:none;cursor:pointer">
       </div>
       <!-- Live cost formula display -->
       <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);line-height:1.8;margin-bottom:10px">
@@ -1449,7 +1495,7 @@ function renderRegister(el){
     </div>
     <!-- REGISTER PANEL (hidden by default if not logged in) -->
     <div id="register-panel" style="display:none">`}
-    <div style="display:grid;grid-template-columns:3fr 2fr;gap:40px">
+    <div style="display: flex; flex-direction: column; gap: 40px;">
       <div>
         <h1 style="font-family:'Instrument Serif',serif;font-size:clamp(28px,4vw,42px);margin-bottom:8px">${u.isRegistered?'Update Profile':'Register Your Auto'}</h1>
         <p style="color:var(--muted);font-size:14px;margin-bottom:28px;line-height:1.7">Add your auto to the live network. Saved permanently — log back in anytime with your vehicle number.</p>
@@ -1655,7 +1701,7 @@ function renderDashboard(el){
     </div>
 
     <!-- Stat cards -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;margin-bottom:28px">
+    <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px;">
       ${[
         {v:pumpsRanked.filter(s=>s.status==='ok').length,l:'Stations Available',c:'var(--ok)'},
         {v:pumpsRanked.filter(s=>s.status==='warn').length,l:'Stations Moderate',c:'var(--warn)'},
@@ -1934,7 +1980,11 @@ function renderBlog(id, el){
           .post-content p{margin-bottom:16px}
           .post-content strong{color:var(--text)}
           .post-content div{margin:16px 0}
-        </style>
+
+#algo-drawer.open { transform: translateY(0) !important; }
+
+#algo-drawer.open { transform: translateY(0) !important; }
+</style>
         <div class="post-content">${post.content}</div>
       </div>
       <!-- Comments -->
@@ -2116,6 +2166,23 @@ function init(){
   buildNav();
   updateUserBtn();
   updateBell();
+  firebase.database().ref('stations').on('value', snap => {
+    const data = snap.val();
+    if(data) {
+      STATIONS.forEach(s => {
+        if(data[s.id]) {
+          const prev = s.status;
+          Object.assign(s, data[s.id]);
+          if(s.status !== prev && (s.status === 'warn' || s.status === 'busy')) {
+            generateAlert(s);
+          }
+        }
+      });
+      updateStatsBar();
+      if(G.currentPage === 'home' && document.getElementById('app')) renderHome(document.getElementById('app'));
+    }
+  });
+
 
   // Start simulation
   initSim();
@@ -2156,6 +2223,11 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('service-worker.js')
     .then(() => console.log("Service Worker Registered"));
 }
+</script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>
+  firebase.initializeApp({apiKey: "YOUR_API_KEY", databaseURL: "YOUR_DATABASE_URL", projectId: "YOUR_PROJECT_ID"});
 </script>
 </body>
 </html>
