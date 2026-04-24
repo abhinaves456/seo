@@ -993,7 +993,7 @@ function setActiveNav(hash){
 function updateUserBtn(){
   const el=$('nav-user-btn');
   if(G.driver.isRegistered){
-    var driverFirst=G.driver.name.split(' ')[0];
+    const driverFirst=G.driver.name.split(' ')[0];
     el.innerHTML='<div style="display:flex;align-items:center;gap:6px">'
       +'<a href="#dashboard" style="display:inline-flex;align-items:center;gap:6px;background:rgba(245,197,24,.12);border:1px solid rgba(245,197,24,.3);color:var(--accent);border-radius:8px;padding:5px 12px;font-size:12px;font-weight:800;text-decoration:none">&#x1F6FA; '+driverFirst+'</a>'
       +'<button onclick="logoutDriver()" title="Logout" style="width:28px;height:28px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center"><i class="fa-solid fa-right-from-bracket"></i></button>'
@@ -1343,18 +1343,18 @@ function runDijkstraMap(){
   const top=ranked[0];
   const cl={ok:'var(--ok)',warn:'var(--warn)',busy:'var(--danger)'};
   // Build result HTML using string concat to avoid nested template literal syntax error
-  var rowsHtml = ranked.slice(0,6).map(function(s,i){
-    var spanCol = i===0 ? 'var(--ok)' : 'var(--muted)';
-    var spanWt  = i===0 ? ';font-weight:700' : '';
-    var costCol = i===0 ? 'var(--ok)' : 'var(--dim)';
-    var star    = i===0 ? '&#9733; ' : '';
+  const rowsHtml = ranked.slice(0,6).map(function(s,i){
+    const spanCol = i===0 ? 'var(--ok)' : 'var(--muted)';
+    const spanWt  = i===0 ? ';font-weight:700' : '';
+    const costCol = i===0 ? 'var(--ok)' : 'var(--dim)';
+    const star    = i===0 ? '&#9733; ' : '';
     return '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(37,37,53,.4);font-size:10px">'
       + '<span style="color:'+spanCol+spanWt+'">' + star + '#'+(i+1)+' '+s.short+'</span>'
       + '<span style="font-family:JetBrains Mono,monospace;color:'+costCol+'">'+s.cost.toFixed(1)+'</span>'
       + '</div>';
   }).join('');
-  var pruned = all.filter(function(s){return !s.feasible;}).length;
-  var prunedHtml = pruned > 0
+  const pruned = all.filter(function(s){return !s.feasible;}).length;
+  const prunedHtml = pruned > 0
     ? '<div style="margin-top:8px;font-size:10px;color:var(--danger)"><i class="fa-solid fa-filter-circle-xmark" style="margin-right:4px"></i>'+pruned+' pruned by constraints</div>'
     : '';
   res.innerHTML =
