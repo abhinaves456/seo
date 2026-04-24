@@ -1,0 +1,70 @@
+Lab Sheet 28: Cheapest Path (Dijkstra)
+
+1. Explanation
+Finding the most cost-effective path to an LPG station is a classic optimization problem. In our SmartRoute system, Dijkstra's Algorithm systematically explores the "cheapest" known frontier (based on our composite cost of travel, wait time, and price), ensuring that the first time we select a station, it is via the minimum possible cost.
+
+2. Algorithm
+1. Create a priority queue (MinHeap) and insert the auto driver's current location with a cost of 0.
+2. Maintain a map of the minimum cost discovered for each LPG station.
+3. While the queue is not empty, extract the station with the lowest cumulative composite cost.
+4. For each potential destination, calculate the composite cost: α×travelTime + β×waitTime + γ×normalizedPrice.
+5. If the new cost is lower than previously recorded and within constraints, update the map and push to the queue.
+
+3. Input Format
+• First line: Number of LPG stations and available road connections.
+• Next lines: source intersection, destination intersection, and composite cost.
+• Final line: Driver's Start location and Target best station.
+
+4. Output Format
+• The minimum total composite cost to reach the optimal LPG station.
+
+5. Python Code
+Instead of raw nodes and edges, we implement this greedy strategy applied to our LPG station network:
+
+```python
+import heapq
+
+def find_cheapest_lpg_station(driver_loc, stations, alpha, beta, gamma):
+    # Priority Queue stores: (composite_cost, station_id)
+    pq = [(0, driver_loc)]
+    min_costs = {driver_loc: 0}
+    best_station = None
+
+    while pq:
+        current_cost, u = heapq.heappop(pq)
+
+        # In our graph, the driver connects to all feasible stations
+        for station in stations:
+            # Example distance function
+            travel_cost = alpha * calculate_travel_time(u, station)
+            wait_cost = beta * station.expected_wait_time()
+            price_cost = gamma * normalize_price(station.price)
+
+            new_cost = current_cost + travel_cost + wait_cost + price_cost
+
+            if station.id not in min_costs or new_cost < min_costs[station.id]:
+                min_costs[station.id] = new_cost
+                heapq.heappush(pq, (new_cost, station.id))
+
+                # Keep track of the globally cheapest valid station destination
+                if best_station is None or new_cost < min_costs[best_station]:
+                    best_station = station.id
+
+    return best_station, min_costs.get(best_station, -1)
+
+# Helper functions for demonstration
+def calculate_travel_time(src, dest): return 15  # stub
+def normalize_price(price): return (price - 70.0) / 10.0 # stub
+```
+
+6. Why This Optimized Code Instead of Simple Code
+A simple Breadth-First Search (BFS) only works for unweighted graphs. For complex LPG routing, a greedy approach using a Priority Queue prevents exploring redundant, expensive stations, drastically reducing the search space and computing the optimal target instantly.
+
+7. Real-World Applications
+• GPS Navigation systems (Google Maps) for shortest drives to gas stations.
+• Routing data packets across the internet with minimum latency.
+• LPG SmartRoute composite calculation for driver-cost minimization in Bangalore.
+
+8. Learning Outcomes
+• LO1: Identified and explained why Dijkstra's greedy approach is suitable for composite cost-minimization in the SmartRoute engine.
+• LO2: Implemented a Greedy search to find the single cheapest LPG station relative to a driver's live GPS position.
