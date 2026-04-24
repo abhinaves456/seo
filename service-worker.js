@@ -1,10 +1,10 @@
 const CACHE_NAME = "lpg-app-v1";
 const urlsToCache = [
-  "/seo/",
-  "/seo/index.html",
-  "/seo/manifest.json",
-  "/seo/icon-192.png",
-  "/seo/icon-512.png"
+  "/",
+  "/index.html",
+  "/manifest.json",
+  "/icon-192.png",
+  "/icon-512.png"
 ];
 
 self.addEventListener("install", event => {
