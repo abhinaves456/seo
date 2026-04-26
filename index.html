@@ -176,8 +176,75 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.25)}
 
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
+
+<link rel="apple-touch-icon" href="/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0f0f13">
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-453G1P7NV2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-453G1P7NV2');
+</script>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-analytics-compat.js"></script>
+
+<style>
+
+/* Mobile First Adjustments */
+@media(max-width: 768px) {
+  body { padding-bottom: calc(65px + env(safe-area-inset-bottom)); padding-top: 0; }
+  .bottom-nav-container {
+    position: fixed; bottom: 0; left: 0; width: 100%; height: calc(65px + env(safe-area-inset-bottom));
+    background: var(--bg); border-top: 1px solid var(--border);
+    display: flex; justify-content: space-around; align-items: center; z-index: 1000;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  header { display: none !important; }
+  .grid { grid-template-columns: 1fr !important; }
+  button, a { min-height: 48px; min-width: 48px; display: inline-flex; align-items: center; justify-content: center; touch-action: manipulation; }
+  #pg-map .map-container { height: calc(100dvh - 65px - env(safe-area-inset-bottom)) !important; }
+}
+
+@media(min-width: 769px) {
+  .bottom-nav-container { display: none; }
+}
+
+.bottom-nav-item {
+  color: var(--muted); text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: 600;
+}
+.bottom-nav-item.nav-active { color: var(--accent); }
+.bottom-nav-item i { font-size: 20px; }
+
+</style>
+
+<link rel="manifest" href="/manifest.json">
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(reg => console.log('Service Worker registered', reg))
+      .catch(err => console.error('Service Worker registration failed', err));
+  }
+</script>
+
 </head>
 <body>
+
+<nav class="bottom-nav-container">
+  <a href="#home" class="bottom-nav-item nav-active" data-nav="home"><i class="fa-solid fa-house"></i>Home</a>
+  <a href="#map" class="bottom-nav-item" data-nav="map"><i class="fa-solid fa-map"></i>Map</a>
+  <a href="#dashboard" class="bottom-nav-item" data-nav="dashboard"><i class="fa-solid fa-chart-pie"></i>Dash</a>
+  <a href="#reports" class="bottom-nav-item" data-nav="reports"><i class="fa-solid fa-file-lines"></i>Reports</a>
+  <a href="#register" class="bottom-nav-item" data-nav="register"><i class="fa-solid fa-user"></i>Me</a>
+</nav>
+
 
 <noscript><div style="padding:40px;max-width:800px;margin:0 auto;font-family:sans-serif;color:#eee;background:#111;min-height:100vh"><h1 style="color:#f5c518">🛺 Auto LPG SmartRoute — Bangalore</h1><p>Enable JavaScript to use the live map, Dijkstra routing, and driver features.</p><h2>10 Monitored Stations</h2><ul style="margin-top:10px;line-height:2"><li>Jilu Auto Gas — Hebbal</li><li>Krishi Pump — Nagarbhavi</li><li>Propel — Sarjapur Road</li><li>Essay — Vidyaranyapura</li><li>Supergas — Yeshwanthpur</li><li>Chanders — Gandhi Nagar</li><li>Go Gas — Mysore Circle</li><li>Go Gas — Lal Bagh</li><li>Sri Maruthi — Nayandahalli</li><li>Total LPG — Bommasandra</li></ul></div></noscript>
 
@@ -709,6 +776,61 @@ heap.push({ station, cost: α*travel + β*wait + γ*price });
 // ====================================================================
 // GLOBAL STATE
 // ====================================================================
+
+let db = null;
+const firebaseConfig = {
+  databaseURL: "https://lpg-smartroute-default-rtdb.firebaseio.com"
+};
+
+try {
+  if (typeof firebase !== 'undefined') {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+
+    console.log("Firebase initialized");
+  }
+} catch (e) {
+  console.log("Firebase init error", e);
+}
+
+function listenToFirebaseStations() {
+  if (!db) return;
+  db.ref('stations').on('value', snap => {
+    const data = snap.val();
+    if (data) {
+      STATIONS.forEach(s => {
+        if (data[s.id] !== undefined) {
+          s.queue = data[s.id].queue || 0;
+          s.status = s.queue < 4 ? 'ok' : s.queue < 8 ? 'warn' : 'busy';
+        }
+      });
+      if(G.page === 'map') refreshMapAutos();
+      if(G.page === 'dashboard') refreshCharts();
+    }
+  });
+}
+
+function listenToOtherDrivers() {
+  if (!db) return;
+  db.ref('drivers').on('value', snap => {
+    const data = snap.val();
+    if(data) {
+      G.otherDrivers = Object.values(data).filter(d => Date.now() - d.ts < 60000); // Only active in last 60s
+      if(G.page === 'map') refreshMapAutos();
+    }
+  });
+}
+
+function pushDriverLocationToFirebase(lat, lng) {
+  if (!db || !G.driver.isRegistered || !G.driver.name) return;
+  db.ref('drivers/' + G.driver.name.replace(/[^a-zA-Z0-9]/g, '')).set({
+    name: G.driver.name,
+    lat: lat,
+    lng: lng,
+    ts: Date.now()
+  });
+}
+
 const G = {
   map: null,
   mapInited: false,
@@ -911,6 +1033,7 @@ function stnPopup(s){
 }
 
 function addDriverMarker(lat,lng){
+  pushDriverLocationToFirebase(lat,lng);
   if(G.realDot){G.realDot.setLatLng([lat,lng]);return}
   const icon=L.divIcon({className:'',html:`<div class="user-marker"><i class="fa-solid fa-location-crosshairs" style="font-size:12px"></i></div>`,iconSize:[36,36],iconAnchor:[18,18]});
   G.realDot=L.marker([lat,lng],{icon,zIndexOffset:2000}).addTo(G.map);
@@ -928,6 +1051,26 @@ function refreshMapAutos(){
       if(el){const d=el.querySelector('.auto-dot');if(d){d.className='auto-dot'+' '+(a.status==='waiting'?'waiting':a.status==='leaving'?'leaving':'')}}
     }
   });
+
+  // Render other real drivers from Firebase
+  if(G.otherDrivers && G.otherDrivers.length > 0) {
+    if(!G.otherDriverMarkers) G.otherDriverMarkers = [];
+
+    G.otherDrivers.forEach(d => {
+      // Don't render self
+      if(G.driver.isRegistered && d.name === G.driver.name) return;
+
+      let m = G.otherDriverMarkers.find(x => x.id === d.name);
+      if(!m) {
+        const icon = L.divIcon({className:'',html:`<div class="user-marker" style="background:linear-gradient(135deg,var(--algo),#8b5cf6);"><i class="fa-solid fa-car-side" style="font-size:12px"></i></div>`,iconSize:[36,36],iconAnchor:[18,18]});
+        const marker = L.marker([d.lat, d.lng], {icon:icon, zIndexOffset:150}).addTo(G.map);
+        marker.bindPopup(`<div style="font-family:Syne,sans-serif"><div style="font-weight:700;color:var(--algo);margin-bottom:4px">🚗 Live Driver</div><div style="font-size:13px;font-weight:600">${esc(d.name)}</div></div>`);
+        G.otherDriverMarkers.push({id: d.name, marker: marker});
+      } else {
+        m.marker.setLatLng([d.lat, d.lng]);
+      }
+    });
+  }
   // Update station popups & marker classes
   STATIONS.forEach(s=>{
     const sm=G.stnMarkers.find(x=>x.id===s.id);
@@ -2124,7 +2267,11 @@ function init(){
   updateUserBtn();
   updateBell();
 
+
+  listenToFirebaseStations();
+  listenToOtherDrivers();
   // Start simulation
+
   initSim();
   G.simInterval=setInterval(simTick,2000);
   G.priceInterval=setInterval(priceTick,9000);
