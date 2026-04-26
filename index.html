@@ -33,6 +33,13 @@ tailwind.config={theme:{extend:{colors:{bg:'#1a2416',card:'#111a0e',surface:'#18
 </script>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-453G1P7NV2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-453G1P7NV2');
+</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -41,13 +48,6 @@ tailwind.config={theme:{extend:{colors:{bg:'#1a2416',card:'#111a0e',surface:'#18
   --ok:#22c55e;--warn:#f97316;--danger:#ef4444;--info:#60a5fa;--algo:#a78bfa;
   --text:#f0f7ed;--muted:#7a9a6a;--dim:#3a5530;
 }
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-453G1P7NV2');
-</script>
 
 body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}
