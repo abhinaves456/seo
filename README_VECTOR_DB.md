@@ -27,3 +27,17 @@ To run this multimodal prototype locally, you will need some additional packages
 
 Run it with:
 `python3 multimodal_vector_db_prototype.py`
+
+## PostgreSQL (pgvector) Integration
+
+If your team is already using PostgreSQL, it is highly recommended to use the **`pgvector`** extension instead of a standalone Vector DB like ChromaDB.
+
+I have provided `pgvector_prototype.py` to show how you can embed vectors directly into your teammate's SQL database.
+
+### Why this is better for large data amounts:
+* **One Database:** You don't have to worry about data syncing issues between Zain's SQL DB and your Vector DB.
+* **True Hybrid Search:** You can write a standard SQL query that uses `WHERE department = 'engineering'` AND `ORDER BY embedding <-> '[vector]'` in the exact same query, making it lightning fast and highly scalable.
+
+### Running locally
+You will need a PostgreSQL database running locally with the `pgvector` extension installed. You will also need the psycopg2 library:
+`pip install psycopg2-binary numpy`
