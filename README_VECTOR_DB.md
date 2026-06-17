@@ -41,3 +41,12 @@ I have provided `pgvector_prototype.py` to show how you can embed vectors direct
 ### Running locally
 You will need a PostgreSQL database running locally with the `pgvector` extension installed. You will also need the psycopg2 library:
 `pip install psycopg2-binary numpy`
+
+## Modular Intent Processing (Wasim's Module)
+
+A new script `intent_processor.py` has been added. This shows how Wasim should structure the Intent Processing module so it can be swapped out later.
+
+### Why this is highly modular:
+* It uses an **Abstract Base Class** (`BaseIntentProcessor`).
+* The main application routing logic does not care *how* the intent is extracted, only that it receives a specific JSON format containing the `intent`, `logical_filters`, and `semantic_query`.
+* You can start today with the fast `SimpleRegexIntentProcessor`, and tomorrow Wasim can drop in an `LLMIntentProcessor` without breaking your Vector DB or Zain's Logical DB code.
