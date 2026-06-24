@@ -1,7 +1,7 @@
 {
   "name": "LPG Smart Route",
   "short_name": "LPG Route",
-  "start_url": "/seo/",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0d6efd",
